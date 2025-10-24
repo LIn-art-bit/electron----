@@ -169,6 +169,16 @@ body {
     box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
 }
 
+.btn-info {
+    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+    color: white;
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+}
+
 .flash-tip {
     font-size: 0.9em;
     color: #666;

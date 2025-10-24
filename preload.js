@@ -67,6 +67,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // 停止托盘图标闪烁
   stopTrayFlashing: () => {
     ipcRenderer.send('tray:stop-flashing');
+  },
+
+  // ========== 原生通知 ==========
+  // 显示系统通知
+  showNotification: (title, body, options = {}) => {
+    ipcRenderer.send('show-notification', { title, body, options });
+  },
+
+  // 显示任务相关通知
+  showTaskNotification: (taskData) => {
+    ipcRenderer.send('show-task-notification', taskData);
   }
 });
 

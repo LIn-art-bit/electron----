@@ -95,11 +95,23 @@ function addTask() {
     // 重新渲染
     renderTasks();
     
-    // 如果窗口不可见（隐藏到托盘），触发托盘图标闪烁
+    // 如果窗口不可见（隐藏到托盘），触发托盘图标闪烁 + 通知
+    if (document.hidden) {
+        // 触发托盘图标闪烁
         if (window.electronAPI && window.electronAPI.startTrayFlashing) {
             window.electronAPI.startTrayFlashing();
             console.log('窗口隐藏，触发托盘图标闪烁');
         }
+        
+        // 发送系统通知
+        if (window.electronAPI && window.electronAPI.showTaskNotification) {
+            window.electronAPI.showTaskNotification({
+                action: 'added',
+                taskText: task.text,
+                taskId: task.id
+            });
+        }
+    }
     
     console.log('任务已添加:', task);
 }
@@ -287,6 +299,37 @@ function initializeIPCFeatures() {
                 window.electronAPI.stopTrayFlashing();
                 console.log('停止托盘图标闪烁');
                 showNotification('托盘图标停止闪烁', 'info');
+            }
+        });
+    }
+    
+    // 【原生通知】测试功能
+    const testNotificationBtn = document.getElementById('test-notification-btn');
+    const testTaskNotificationBtn = document.getElementById('test-task-notification-btn');
+    
+    if (testNotificationBtn) {
+        testNotificationBtn.addEventListener('click', () => {
+            if (window.electronAPI && window.electronAPI.showNotification) {
+                window.electronAPI.showNotification(
+                    '🎉 测试通知',
+                    '这是一条测试通知消息，点击可以聚焦到窗口！'
+                );
+                console.log('已发送测试通知');
+                showNotification('测试通知已发送', 'info');
+            }
+        });
+    }
+    
+    if (testTaskNotificationBtn) {
+        testTaskNotificationBtn.addEventListener('click', () => {
+            if (window.electronAPI && window.electronAPI.showTaskNotification) {
+                window.electronAPI.showTaskNotification({
+                    action: 'added',
+                    taskText: '这是一个示例任务',
+                    taskId: 999
+                });
+                console.log('已发送任务通知');
+                showNotification('任务通知已发送', 'info');
             }
         });
     }

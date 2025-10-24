@@ -1,7 +1,7 @@
 // Electron 主进程文件
 // 主进程负责创建和管理窗口，以及处理系统级事件
 
-const { app, BrowserWindow, ipcMain, dialog, Menu, Tray, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, Tray, nativeImage, Notification } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -338,6 +338,102 @@ function stopTrayFlashing() {
   isFlashing = false;
 }
 
+// ============ 原生通知功能 ============
+
+// 显示系统通知
+function showNotification(title, body, options = {}) {
+  // 检查系统是否支持通知
+  if (!Notification.isSupported()) {
+    console.warn('系统不支持原生通知');
+    return null;
+  }
+
+  console.log('显示通知:', title);
+
+  // 创建通知
+  const notification = new Notification({
+    title: title,
+    body: body,
+    icon: options.icon || path.join(__dirname, 'assets/icon.png'),
+    silent: options.silent || false,
+    ...options
+  });
+
+  // 监听点击事件
+  notification.on('click', () => {
+    console.log('通知被点击');
+    
+    // 显示主窗口
+    showWindow();
+    
+    // 停止托盘闪烁
+    stopTrayFlashing();
+    
+    // 如果有回调函数，执行它
+    if (options.onClick) {
+      options.onClick();
+    }
+  });
+
+  // 监听显示事件
+  notification.on('show', () => {
+    console.log('通知已显示');
+  });
+
+  // 监听关闭事件
+  notification.on('close', () => {
+    console.log('通知已关闭');
+  });
+
+  // 显示通知
+  notification.show();
+
+  return notification;
+}
+
+// 显示任务相关通知
+function showTaskNotification(taskData) {
+  const { action, taskText, taskCount } = taskData;
+
+  let title, body;
+
+  switch (action) {
+    case 'added':
+      title = '✅ 任务已添加';
+      body = `新任务：${taskText}`;
+      break;
+    case 'completed':
+      title = '🎉 任务已完成';
+      body = `已完成：${taskText}`;
+      break;
+    case 'deleted':
+      title = '🗑️ 任务已删除';
+      body = `已删除：${taskText}`;
+      break;
+    case 'cleared':
+      title = '🧹 任务已清空';
+      body = `已清空 ${taskCount} 个任务`;
+      break;
+    case 'loaded':
+      title = '📂 任务已加载';
+      body = `已加载 ${taskCount} 个任务`;
+      break;
+    default:
+      title = '📝 任务更新';
+      body = taskText || '任务状态已更新';
+  }
+
+  showNotification(title, body, {
+    silent: false,
+    onClick: () => {
+      // 点击通知后的额外操作
+      if (mainWindow) {
+        mainWindow.webContents.send('focus-task', taskData);
+      }
+    }
+  });
+}
+
 // ============ IPC 处理器 ============
 
 // 【模式 1：单向通信】渲染器到主进程 - 设置窗口标题
@@ -549,6 +645,13 @@ function createMenu(mainWindow) {
   Menu.setApplicationMenu(menu);
 }
 
+// Windows 平台配置（用于原生通知）
+if (process.platform === 'win32') {
+  // 设置 AppUserModelID 以启用通知功能
+  // 开发环境使用 execPath，生产环境应使用固定 ID
+  app.setAppUserModelId(process.execPath);
+}
+
 // Electron 完成初始化并准备创建浏览器窗口时调用此方法
 // 某些 API 只能在此事件发生后使用
 app.whenReady().then(() => {
@@ -569,6 +672,15 @@ app.whenReady().then(() => {
   
   ipcMain.on('tray:stop-flashing', () => {
     stopTrayFlashing();
+  });
+  
+  // 原生通知
+  ipcMain.on('show-notification', (event, { title, body, options }) => {
+    showNotification(title, body, options);
+  });
+  
+  ipcMain.on('show-task-notification', (event, taskData) => {
+    showTaskNotification(taskData);
   });
   
   // 创建窗口
