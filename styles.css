@@ -159,6 +159,23 @@ body {
     box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
 }
 
+.btn-warning {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+}
+
+.flash-tip {
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+    padding: 8px 12px;
+}
+
 /* 任务区域 */
 .task-section {
     padding: 30px;

@@ -130,6 +130,9 @@ function createTray() {
   // 创建托盘实例
   tray = new Tray(trayIcon);
 
+  // 保存图标引用（用于闪烁功能）
+  normalIcon = trayIcon;
+
   // 设置提示文本
   tray.setToolTip('Electron 任务管理器 - 点击显示窗口');
 
@@ -250,6 +253,10 @@ function showWindow() {
     }
     mainWindow.show();
     mainWindow.focus();
+    
+    // 窗口显示时停止闪烁
+    stopTrayFlashing();
+    
     console.log('窗口已显示');
   }
 }
@@ -261,6 +268,74 @@ function destroyTray() {
     tray = null;
     console.log('系统托盘已销毁');
   }
+}
+
+// ============ 托盘图标闪烁功能 ============
+
+let isFlashing = false;
+let flashInterval = null;
+let normalIcon = null;
+let emptyIcon = null;
+
+// 开始闪烁托盘图标
+function startTrayFlashing() {
+  // 如果已经在闪烁或托盘不存在，直接返回
+  if (isFlashing || tray === null) {
+    return;
+  }
+
+  console.log('开始托盘图标闪烁');
+  isFlashing = true;
+
+  // 如果 normalIcon 还没有初始化，不能闪烁
+  if (!normalIcon) {
+    console.warn('托盘图标未初始化，无法开始闪烁');
+    isFlashing = false;
+    return;
+  }
+  
+  // 创建空图标（透明）
+  if (!emptyIcon) {
+    emptyIcon = nativeImage.createEmpty();
+  }
+
+  // 设置闪烁间隔（每500毫秒切换一次）
+  let showIcon = false;
+  flashInterval = setInterval(() => {
+    if (tray) {
+      if (showIcon) {
+        tray.setImage(normalIcon);
+      } else {
+        tray.setImage(emptyIcon);
+      }
+      showIcon = !showIcon;
+    } else {
+      // 如果托盘被销毁，停止闪烁
+      stopTrayFlashing();
+    }
+  }, 500);
+}
+
+// 停止闪烁托盘图标
+function stopTrayFlashing() {
+  if (!isFlashing) {
+    return;
+  }
+
+  console.log('停止托盘图标闪烁');
+  
+  // 清除闪烁定时器
+  if (flashInterval) {
+    clearInterval(flashInterval);
+    flashInterval = null;
+  }
+
+  // 恢复正常图标
+  if (tray && normalIcon) {
+    tray.setImage(normalIcon);
+  }
+
+  isFlashing = false;
 }
 
 // ============ IPC 处理器 ============
@@ -486,6 +561,15 @@ app.whenReady().then(() => {
   // 模式 2：双向通信
   ipcMain.handle('dialog:openFile', handleFileOpen);
   ipcMain.handle('dialog:saveFile', handleFileSave);
+  
+  // 托盘图标闪烁
+  ipcMain.on('tray:start-flashing', () => {
+    startTrayFlashing();
+  });
+  
+  ipcMain.on('tray:stop-flashing', () => {
+    stopTrayFlashing();
+  });
   
   // 创建窗口
   createWindow();

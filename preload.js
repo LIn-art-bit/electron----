@@ -56,6 +56,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // 监听从主进程发来的全部标记为未完成命令
   onUncompleteAllTasks: (callback) => {
     ipcRenderer.on('uncomplete-all-tasks', () => callback());
+  },
+
+  // ========== 托盘图标闪烁 ==========
+  // 开始托盘图标闪烁
+  startTrayFlashing: () => {
+    ipcRenderer.send('tray:start-flashing');
+  },
+
+  // 停止托盘图标闪烁
+  stopTrayFlashing: () => {
+    ipcRenderer.send('tray:stop-flashing');
   }
 });
 

@@ -95,6 +95,12 @@ function addTask() {
     // 重新渲染
     renderTasks();
     
+    // 如果窗口不可见（隐藏到托盘），触发托盘图标闪烁
+        if (window.electronAPI && window.electronAPI.startTrayFlashing) {
+            window.electronAPI.startTrayFlashing();
+            console.log('窗口隐藏，触发托盘图标闪烁');
+        }
+    
     console.log('任务已添加:', task);
 }
 
@@ -259,6 +265,30 @@ function initializeIPCFeatures() {
     
     if (saveFileBtn) {
         saveFileBtn.addEventListener('click', handleSaveFile);
+    }
+    
+    // 【托盘图标闪烁】测试功能
+    const startFlashBtn = document.getElementById('start-flash-btn');
+    const stopFlashBtn = document.getElementById('stop-flash-btn');
+    
+    if (startFlashBtn) {
+        startFlashBtn.addEventListener('click', () => {
+            if (window.electronAPI && window.electronAPI.startTrayFlashing) {
+                window.electronAPI.startTrayFlashing();
+                console.log('手动触发托盘图标闪烁');
+                showNotification('托盘图标开始闪烁！最小化窗口查看效果', 'info');
+            }
+        });
+    }
+    
+    if (stopFlashBtn) {
+        stopFlashBtn.addEventListener('click', () => {
+            if (window.electronAPI && window.electronAPI.stopTrayFlashing) {
+                window.electronAPI.stopTrayFlashing();
+                console.log('停止托盘图标闪烁');
+                showNotification('托盘图标停止闪烁', 'info');
+            }
+        });
     }
 }
 
