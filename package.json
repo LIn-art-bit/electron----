@@ -1,0 +1,22 @@
+{
+  "name": "electron-task-manager",
+  "version": "1.0.0",
+  "description": "Electron 学习项目 - 任务管理器",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "electron",
+    "task",
+    "manager",
+    "tutorial"
+  ],
+  "author": "Electron 学习者",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^27.0.0"
+  }
+}
+

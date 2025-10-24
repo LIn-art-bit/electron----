@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electron 任务管理器 - 学习项目</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部信息 -->
+        <header class="header">
+            <h1>📝 Electron 任务管理器</h1>
+            <p class="subtitle">使用 Electron 构建的桌面应用</p>
+        </header>
+
+        <!-- 系统信息面板 -->
+        <section class="info-panel">
+            <h2>📊 系统信息</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Node.js 版本:</span>
+                    <span id="node-version" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Chrome 版本:</span>
+                    <span id="chrome-version" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Electron 版本:</span>
+                    <span id="electron-version" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">操作系统:</span>
+                    <span id="platform" class="info-value">-</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- IPC 功能演示区域 -->
+        <section class="ipc-demo-section">
+            <h2>🔗 IPC 功能演示</h2>
+            
+            <!-- 模式 1：单向通信 -->
+            <div class="ipc-demo-item">
+                <h3>📤 模式 1：设置窗口标题（单向）</h3>
+                <div class="ipc-controls">
+                    <input 
+                        type="text" 
+                        id="title-input" 
+                        placeholder="输入新窗口标题..."
+                        class="task-input"
+                        style="flex: 1;"
+                    >
+                    <button id="set-title-btn" class="btn btn-primary">设置标题</button>
+                </div>
+            </div>
+
+            <!-- 模式 2：双向通信 -->
+            <div class="ipc-demo-item">
+                <h3>🔄 模式 2：文件操作（双向）</h3>
+                <div class="ipc-controls">
+                    <button id="open-file-btn" class="btn btn-success">📂 打开文件</button>
+                    <button id="save-file-btn" class="btn btn-success">💾 保存文件</button>
+                    <span id="file-status" class="file-status"></span>
+                </div>
+            </div>
+            
+            <!-- 提示信息 -->
+            <div class="ipc-tip">
+                💡 提示：也可以使用菜单栏或快捷键操作（Ctrl+O 打开，Ctrl+S 保存）
+            </div>
+        </section>
+
+        <!-- 任务管理区域 -->
+        <section class="task-section">
+            <h2>✅ 任务列表</h2>
+            
+            <!-- 添加任务表单 -->
+            <div class="task-input-area">
+                <input 
+                    type="text" 
+                    id="task-input" 
+                    placeholder="输入新任务..."
+                    class="task-input"
+                >
+                <button id="add-task-btn" class="btn btn-primary">添加任务</button>
+            </div>
+
+            <!-- 任务统计 -->
+            <div class="task-stats">
+                <span>总任务: <strong id="total-tasks">0</strong></span>
+                <span>已完成: <strong id="completed-tasks">0</strong></span>
+                <span>进行中: <strong id="pending-tasks">0</strong></span>
+            </div>
+
+            <!-- 任务列表 -->
+            <ul id="task-list" class="task-list">
+                <!-- 任务项将通过 JavaScript 动态添加 -->
+            </ul>
+        </section>
+
+        <!-- 学习要点提示 -->
+        <section class="learning-tips">
+            <h3>💡 本项目学习要点</h3>
+            <ul>
+                <li><strong>主进程</strong>: main.js - 负责创建窗口和管理应用生命周期</li>
+                <li><strong>渲染进程</strong>: index.html + renderer.js - 负责 UI 渲染和用户交互</li>
+                <li><strong>预加载脚本</strong>: preload.js - 安全地暴露 Node.js API</li>
+                <li><strong>进程通信</strong>: 使用 contextBridge 和 IPC 进行安全通信</li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- 渲染进程脚本 -->
+    <script src="renderer.js"></script>
+</body>
+</html>
+

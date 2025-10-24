@@ -1,0 +1,63 @@
+# 托盘图标说明
+
+## 图标文件
+
+由于无法直接生成图片文件，请按以下方式准备图标：
+
+### Windows / Linux
+- **文件名**: `icon.png`
+- **尺寸**: 16x16 或 32x32 像素
+- **格式**: PNG（支持透明背景）
+- **路径**: `assets/icon.png`
+
+### macOS
+- **文件名**: `iconTemplate.png`
+- **尺寸**: 16x16 像素（普通）, 32x32 像素（Retina）
+- **格式**: PNG
+- **要求**: 
+  - 使用黑色和透明度绘制
+  - 系统会自动适配亮色/暗色主题
+- **路径**: `assets/iconTemplate.png`
+
+### 高分辨率版本（可选）
+- `icon@2x.png` (32x32) - Windows/Linux
+- `iconTemplate@2x.png` (32x32) - macOS
+
+## 快速获取图标
+
+### 方法 1：在线图标生成器
+访问 https://icon-icons.com/ 或 https://www.iconfinder.com/
+搜索 "task" 或 "checklist"，下载合适的图标
+
+### 方法 2：使用 Emoji
+在线工具：https://favicon.io/emoji-favicons/
+选择 ✅ 或 📝 emoji，生成 PNG 图标
+
+### 方法 3：自己绘制
+使用 Photoshop、GIMP、Figma 等工具
+绘制简单的图标（如勾选框、任务列表图标）
+
+## 临时解决方案
+
+在开发阶段，可以先使用 Electron 的默认图标：
+
+```javascript
+// main.js
+const { nativeImage } = require('electron');
+
+// 创建一个简单的彩色图标
+const icon = nativeImage.createEmpty();
+// 或者使用应用的默认图标
+```
+
+## 本项目建议
+
+建议使用以下图标：
+- ✅ 勾选框图标（表示任务管理）
+- 📝 记事本图标（表示笔记/任务）
+- 📋 剪贴板图标（表示列表）
+
+颜色建议：
+- 主色调：蓝色或紫色（与应用主题一致）
+- 简洁明了，易于识别
+
